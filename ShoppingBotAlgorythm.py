@@ -22,28 +22,29 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def add_item(update: Update, context: ContextTypes.DEFAULT_TYPE):
     item = update.message.text.strip()
 
-    # Команда /remove
-    if item.startswith("/remove"):
-        parts = item.split(maxsplit=1)
-        if len(parts) < 2:
-            return await update.message.reply_text("Напишите: /remove продукт")
-        name = parts[1].lower()
-
-        removed = False
-        for x in shopping_list:
-            if x.lower() == name:
-                shopping_list.remove(x)
-                removed = True
-                break
-
-        if removed:
-            return await update.message.reply_text(f"Удалено: {name} :)")
-        else:
-            return await update.message.reply_text("Упс... Такого продукта нет в списке :(")
-
     # Обычное добавление
+    if not item:
+        return
     shopping_list.append(item)
     await update.message.reply_text(f"Добавил: {item}")
+
+async def remove_item(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # context.args содержит список аргументов после команды
+    if not context.args:
+        await update.message.reply_text("Напишите: /remove продукт")
+        return
+
+    # Собираем весь аргумент (включая пробелы), например: /remove сливочное масло
+    name = " ".join(context.args).strip().lower()
+
+    # ищем совпадение без учета регистра
+    for i, x in enumerate(shopping_list):
+        if x.lower() == name:
+            removed = shopping_list.pop(i)
+            await update.message.reply_text(f"Удалено: {removed}")
+            return
+
+    await update.message.reply_text("Упс... Такого продукта нет в списке :(")
 
 async def show_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not shopping_list:
@@ -64,6 +65,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("list", show_list))
     app.add_handler(CommandHandler("clear", clear_list))
+    app.add_handler(CommandHandler("remove", remove_item))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, add_item))
 
     print("Бот запущен!")
