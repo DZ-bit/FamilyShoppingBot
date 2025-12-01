@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
@@ -53,8 +57,8 @@ async def clear_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Список очищен!")
 
 def main():
-    TOKEN = "ТОКЕН"
-
+    TOKEN = os.getenv("BOT_TOKEN")
+    
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
