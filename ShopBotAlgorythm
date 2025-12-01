@@ -53,7 +53,7 @@ async def clear_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Список очищен!")
 
 def main():
-    TOKEN = "8502670489:AAFXCj7f1MBbA1mHlkbw11fW0JcgDN-0LqU"
+    TOKEN = "TOKEN"
 
     app = ApplicationBuilder().token(TOKEN).build()
 
