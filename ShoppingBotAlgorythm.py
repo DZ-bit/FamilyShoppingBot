@@ -1,11 +1,21 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
-
+import threading
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 )
+
+load_dotenv()
+
+# --- HTTP сервер для Render ---
+PORT = int(os.getenv("PORT", 10000))
+def run_http_server():
+    server = HTTPServer(("0.0.0.0", PORT), SimpleHTTPRequestHandler)
+    server.serve_forever()
+
+threading.Thread(target=run_http_server, daemon=True).start()
 
 # Хранилище списка продуктов (в памяти)
 shopping_list = []
